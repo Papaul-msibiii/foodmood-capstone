@@ -1,0 +1,9 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#f0f0f0"/>
+  <circle cx="200" cy="150" r="80" fill="#ffd700" stroke="#ff8c00" stroke-width="3"/>
+  <circle cx="180" cy="130" r="8" fill="#ff4500"/>
+  <circle cx="220" cy="140" r="8" fill="#ff4500"/>
+  <circle cx="190" cy="170" r="8" fill="#ff4500"/>
+  <circle cx="210" cy="160" r="8" fill="#ff4500"/>
+  <text x="200" y="250" font-family="Arial" font-size="20" fill="#666" text-anchor="middle">Pizza Margherita</text>
+</svg>
