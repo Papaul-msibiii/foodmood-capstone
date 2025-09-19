@@ -4,8 +4,11 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Menu } from 'lucide-react'
+import { useSession, signOut } from 'next-auth/react'
 
 export default function Navbar() {
+  const { data: session } = useSession();
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
@@ -43,11 +46,17 @@ export default function Navbar() {
           </div>
           
           <nav className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/auth/sign-in">
-                Sign In
-              </Link>
-            </Button>
+            {session ? (
+              <Button variant="ghost" size="sm" onClick={() => signOut()}>
+                Sign Out
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/auth/sign-in">
+                  Sign In
+                </Link>
+              </Button>
+            )}
             
             <Sheet>
               <SheetTrigger asChild>
@@ -77,11 +86,17 @@ export default function Navbar() {
                     Favorites
                   </Link>
                   <div className="pt-4">
+                  {session ? (
+                    <Button variant="outline" size="sm" onClick={() => signOut()} className="w-full">
+                      Sign Out
+                    </Button>
+                  ) : (
                     <Button variant="outline" size="sm" asChild className="w-full">
                       <Link href="/auth/sign-in">
                         Sign In
                       </Link>
                     </Button>
+                  )}
                   </div>
                 </nav>
               </SheetContent>

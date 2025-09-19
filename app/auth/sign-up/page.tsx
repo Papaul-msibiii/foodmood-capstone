@@ -6,20 +6,43 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
+import { useRouter } from 'next/navigation'
 
 export default function SignUpPage() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    
-    // TODO: Implement NextAuth sign-up logic
-    console.log('Sign up form submitted')
-    
-    setTimeout(() => {
+    setError('')
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
       setIsLoading(false)
-    }, 1000)
+      return
+    }
+
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, email, password })
+    })
+
+    if (res.ok) {
+      router.push('/auth/sign-in')
+    } else {
+      const { message } = await res.json()
+      setError(message)
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -35,6 +58,7 @@ export default function SignUpPage() {
           
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
+              {error && <p className="text-red-500 text-center">{error}</p>}
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -42,6 +66,8 @@ export default function SignUpPage() {
                   type="text"
                   placeholder="Enter your full name"
                   required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
               
@@ -52,6 +78,8 @@ export default function SignUpPage() {
                   type="email"
                   placeholder="Enter your email"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               
@@ -62,6 +90,8 @@ export default function SignUpPage() {
                   type="password"
                   placeholder="Create a password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               
@@ -72,6 +102,8 @@ export default function SignUpPage() {
                   type="password"
                   placeholder="Confirm your password"
                   required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </div>
             </CardContent>
