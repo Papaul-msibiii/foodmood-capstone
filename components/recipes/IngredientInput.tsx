@@ -1,20 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { X } from 'lucide-react'
 
 interface IngredientInputProps {
-  initialIngredients?: string[]
+  onSearch: (ingredients: string[]) => void;
 }
 
-export default function IngredientInput({ initialIngredients = [] }: IngredientInputProps) {
-  const [ingredients, setIngredients] = useState<string[]>(initialIngredients)
+export default function IngredientInput({ onSearch }: IngredientInputProps) {
+  const [ingredients, setIngredients] = useState<string[]>([])
   const [inputValue, setInputValue] = useState('')
-  const router = useRouter()
 
   const addIngredient = () => {
     const trimmed = inputValue.trim().toLowerCase()
@@ -28,11 +26,8 @@ export default function IngredientInput({ initialIngredients = [] }: IngredientI
     setIngredients(ingredients.filter(i => i !== ingredient))
   }
 
-  const handleSubmit = () => {
-    if (ingredients.length > 0) {
-      const query = ingredients.join(',')
-      router.push(`/search?ingredients=${encodeURIComponent(query)}`)
-    }
+  const handleSearch = () => {
+    onSearch(ingredients)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -72,7 +67,7 @@ export default function IngredientInput({ initialIngredients = [] }: IngredientI
             ))}
           </div>
           
-          <Button onClick={handleSubmit} className="w-full">
+          <Button onClick={handleSearch} className="w-full">
             Find Recipes
           </Button>
         </div>

@@ -1,9 +1,16 @@
+'use client'
 import { Button } from "@/components/ui/button"
 import { ChefHat, Search } from "lucide-react"
 import Link from "next/link"
 import IngredientInput from "@/components/recipes/IngredientInput"
 
 export default function Home() {
+  const handleSearch = (ingredients: string[]) => {
+    // Navigate to search page with ingredients as query params
+    const queryString = ingredients.length > 0 ? `?ingredients=${ingredients.join(',')}` : ''
+    window.location.href = `/search${queryString}`
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Hero Section */}
@@ -23,7 +30,7 @@ export default function Home() {
         </p>
         
         <div className="max-w-md mx-auto mb-8">
-          <IngredientInput />
+          <IngredientInput onSearch={handleSearch} />
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
