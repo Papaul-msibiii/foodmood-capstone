@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
+import BackButton from '@/components/ui/BackButton'
 
 export default function SignUpPage() {
   const [name, setName] = useState('')
@@ -48,6 +49,9 @@ export default function SignUpPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-md mx-auto">
+        <div className="mb-6">
+          <BackButton />
+        </div>
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">Sign Up</CardTitle>

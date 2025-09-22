@@ -7,6 +7,8 @@ import { formatTime } from '@/lib/utils'
 import EmptyState from '@/components/recipes/EmptyState'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
+import FavoriteButton from '@/components/recipes/FavoriteButton'
+import BackButton from '@/components/ui/BackButton'
 
 interface RecipePageProps {
   params: {
@@ -25,6 +27,11 @@ export default async function RecipePage({ params }: RecipePageProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
+        {/* Back Button */}
+        <div className="mb-6">
+          <BackButton />
+        </div>
+        
         {/* Recipe Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4">{recipe.title}</h1>
@@ -89,10 +96,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
             </div>
 
             {/* Save to Favorites Button */}
-            <Button className="w-full" size="lg">
-              <Heart className="mr-2 h-4 w-4" />
-              Save to Favorites
-            </Button>
+            <FavoriteButton recipe={recipe} />
           </div>
 
           {/* Recipe Content */}

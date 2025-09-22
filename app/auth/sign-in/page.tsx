@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import BackButton from '@/components/ui/BackButton'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -38,6 +39,9 @@ export default function SignInPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-md mx-auto">
+        <div className="mb-6">
+          <BackButton />
+        </div>
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">Sign In</CardTitle>

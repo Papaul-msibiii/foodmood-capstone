@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button"
 import { ChefHat, Search } from "lucide-react"
 import Link from "next/link"
 import IngredientInput from "@/components/recipes/IngredientInput"
+import SearchResults from "@/components/recipes/SearchResults"
+import { useRecipes } from "@/app/context/RecipeContext"
 
 export default function Home() {
+  const { searchRecipes, searchIngredients, clearResults, recipes, isLoading } = useRecipes()
+
   const handleSearch = (ingredients: string[]) => {
-    // Navigate to search page with ingredients as query params
-    const queryString = ingredients.length > 0 ? `?ingredients=${ingredients.join(',')}` : ''
-    window.location.href = `/search${queryString}`
+    searchRecipes(ingredients)
   }
 
   return (
@@ -31,7 +33,29 @@ export default function Home() {
         
         <div className="max-w-md mx-auto mb-8">
           <IngredientInput onSearch={handleSearch} />
+          {searchIngredients.length > 0 && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={clearResults}
+              className="mt-2"
+            >
+              Clear Results
+            </Button>
+          )}
         </div>
+
+        {/* Search Results Section - moved up */}
+        {(searchIngredients.length > 0 || isLoading || recipes.length > 0) && (
+          <div className="max-w-6xl mx-auto mb-8">
+            {searchIngredients.length > 0 && (
+              <h2 className="text-2xl font-bold mb-6 text-center">
+                Recipes for: {searchIngredients.join(', ')}
+              </h2>
+            )}
+            <SearchResults />
+          </div>
+        )}
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild size="lg">
@@ -80,6 +104,7 @@ export default function Home() {
           </p>
         </div>
       </div>
+
     </div>
   )
 }

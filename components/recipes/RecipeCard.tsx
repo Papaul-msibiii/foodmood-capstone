@@ -1,13 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Recipe } from '@/types/recipe'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Heart, Clock, Users } from 'lucide-react'
+import { Heart, Clock, Users, AlertCircle } from 'lucide-react'
 import { formatTime } from '@/lib/utils'
-import { toggleFavorite } from '@/lib/favorites'
+import { toggleFavorite, isFavorite } from '@/lib/favorites'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 
 interface RecipeCardProps {
@@ -15,16 +16,46 @@ interface RecipeCardProps {
 }
 
 export default function RecipeCard({ recipe }: RecipeCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false)
+  const [isRecipeFavorite, setIsRecipeFavorite] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [favoriteLoading, setFavoriteLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const { data: session } = useSession()
+
+  // Vérifier le statut favori au chargement
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (session?.user) {
+        try {
+          setFavoriteLoading(true)
+          const favoriteStatus = await isFavorite(recipe.id)
+          setIsRecipeFavorite(favoriteStatus)
+        } catch (error) {
+          console.error('Error checking favorite status:', error)
+        } finally {
+          setFavoriteLoading(false)
+        }
+      } else {
+        setFavoriteLoading(false)
+      }
+    }
+
+    checkFavoriteStatus()
+  }, [recipe.id, session])
 
   const handleToggleFavorite = async () => {
+    if (!session?.user) {
+      setError('You must be logged in to add favorites')
+      return
+    }
+
     setIsLoading(true)
+    setError(null)
     try {
       const newFavoriteState = await toggleFavorite(recipe)
-      setIsFavorite(newFavoriteState)
-    } catch (error) {
-      console.error('Error toggling favorite:', error)
+      setIsRecipeFavorite(newFavoriteState)
+    } catch (error: any) {
+      setError(error.message || 'Error toggling favorite')
     } finally {
       setIsLoading(false)
     }
@@ -106,20 +137,27 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="pt-0">
+      <CardFooter className="pt-0 flex-col">
         <div className="flex w-full gap-2">
           <Button variant="outline" className="flex-1" asChild>
             <a href={`/recipe/${recipe.id}`}>View Recipe</a>
           </Button>
           <Button
-            variant={isFavorite ? "default" : "outline"}
+            variant={isRecipeFavorite ? "default" : "outline"}
             size="sm"
             onClick={handleToggleFavorite}
-            disabled={isLoading}
+            disabled={isLoading || favoriteLoading}
+            title={session?.user ? (isRecipeFavorite ? "Remove from favorites" : "Add to favorites") : "Login to add favorites"}
           >
-            <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
+            <Heart className={`h-4 w-4 ${isRecipeFavorite ? 'fill-current' : ''}`} />
           </Button>
         </div>
+        {error && (
+          <div className="w-full mt-2 p-2 bg-red-50 border border-red-200 rounded-md flex items-center gap-2 text-sm text-red-600">
+            <AlertCircle className="h-4 w-4" />
+            {error}
+          </div>
+        )}
       </CardFooter>
     </Card>
   )
